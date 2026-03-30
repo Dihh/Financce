@@ -28,18 +28,31 @@ const CONFIGS = {
     corShadow: 'rgba(220, 38, 38, 0.4)',
     storageKey: 'financce_despesas',
   },
+  gastos: {
+    label: 'Gasto',
+    labelPlural: 'Gastos',
+    emptyEmoji: '🛒',
+    placeholder: 'Ex: Supermercado, Farmácia, Lazer...',
+    cor: '#ea580c',
+    corHover: '#c2410c',
+    corLight: '#ffedd5',
+    corShadow: 'rgba(234, 88, 12, 0.4)',
+    storageKey: 'financce_gastos',
+  },
 }
 
 export default function App() {
   const receitas = useEntities('financce_receitas')
   const despesas = useEntities('financce_despesas')
+  const gastos = useEntities('financce_gastos')
 
   const [tab, setTab] = useState('receitas')
   const [view, setView] = useState('list')
   const [selected, setSelected] = useState(null)
 
   const config = CONFIGS[tab]
-  const store = tab === 'receitas' ? receitas : despesas
+  const stores = { receitas, despesas, gastos }
+  const store = stores[tab]
   const currentItem = store.items.find(i => i.id === selected?.id) ?? selected
 
   const switchTab = (newTab) => {

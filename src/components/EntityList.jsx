@@ -74,6 +74,14 @@ export default function EntityList({ items, config, tab, onTabChange, onSelect, 
           <span className="tab-icon">💸</span>
           <span>Despesas</span>
         </button>
+        <button
+          className={`tab-btn ${tab === 'gastos' ? 'tab-btn-active' : ''}`}
+          style={tab === 'gastos' ? { color: '#ea580c' } : {}}
+          onClick={() => onTabChange('gastos')}
+        >
+          <span className="tab-icon">🛒</span>
+          <span>Gastos</span>
+        </button>
       </nav>
     </div>
   )
