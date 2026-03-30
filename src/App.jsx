@@ -1,31 +1,66 @@
 import { useState } from 'react'
-import { useReceitas } from './hooks/useReceitas'
-import ReceitaList from './components/ReceitaList'
-import ReceitaForm from './components/ReceitaForm'
-import ReceitaDetail from './components/ReceitaDetail'
+import { useEntities } from './hooks/useEntities'
+import EntityList from './components/EntityList'
+import EntityForm from './components/EntityForm'
+import EntityDetail from './components/EntityDetail'
 import ValorForm from './components/ValorForm'
 
+const CONFIGS = {
+  receitas: {
+    label: 'Receita',
+    labelPlural: 'Receitas',
+    emptyEmoji: '📋',
+    placeholder: 'Ex: Salário, Freelance, Aluguel...',
+    cor: '#16a34a',
+    corHover: '#15803d',
+    corLight: '#dcfce7',
+    corShadow: 'rgba(22, 163, 74, 0.4)',
+    storageKey: 'financce_receitas',
+  },
+  despesas: {
+    label: 'Despesa',
+    labelPlural: 'Despesas',
+    emptyEmoji: '🧾',
+    placeholder: 'Ex: Aluguel, Internet, Academia...',
+    cor: '#dc2626',
+    corHover: '#b91c1c',
+    corLight: '#fee2e2',
+    corShadow: 'rgba(220, 38, 38, 0.4)',
+    storageKey: 'financce_despesas',
+  },
+}
+
 export default function App() {
-  const { receitas, addReceita, updateReceita, deleteReceita, addValor, deleteValor } = useReceitas()
+  const receitas = useEntities('financce_receitas')
+  const despesas = useEntities('financce_despesas')
+
+  const [tab, setTab] = useState('receitas')
   const [view, setView] = useState('list')
   const [selected, setSelected] = useState(null)
 
-  const currentReceita = receitas.find(r => r.id === selected?.id) ?? selected
+  const config = CONFIGS[tab]
+  const store = tab === 'receitas' ? receitas : despesas
+  const currentItem = store.items.find(i => i.id === selected?.id) ?? selected
 
-  if (view === 'receita-form') {
+  const switchTab = (newTab) => {
+    setTab(newTab)
+    setSelected(null)
+    setView('list')
+  }
+
+  if (view === 'entity-form') {
     return (
-      <ReceitaForm
-        receita={selected}
-        onBack={() => {
-          setView(selected ? 'detail' : 'list')
-        }}
+      <EntityForm
+        item={selected}
+        config={config}
+        onBack={() => setView(selected ? 'detail' : 'list')}
         onSave={(data) => {
           if (selected) {
-            updateReceita(selected.id, data)
+            store.updateItem(selected.id, data)
             setSelected({ ...selected, ...data })
             setView('detail')
           } else {
-            addReceita(data)
+            store.addItem(data)
             setView('list')
           }
         }}
@@ -33,29 +68,31 @@ export default function App() {
     )
   }
 
-  if (view === 'detail' && currentReceita) {
+  if (view === 'detail' && currentItem) {
     return (
-      <ReceitaDetail
-        receita={currentReceita}
+      <EntityDetail
+        item={currentItem}
+        config={config}
         onBack={() => setView('list')}
-        onEdit={() => setView('receita-form')}
+        onEdit={() => setView('entity-form')}
         onDelete={(id) => {
-          deleteReceita(id)
+          store.deleteItem(id)
           setView('list')
         }}
         onAddValor={() => setView('valor-form')}
-        onDeleteValor={deleteValor}
+        onDeleteValor={store.deleteValor}
       />
     )
   }
 
-  if (view === 'valor-form' && currentReceita) {
+  if (view === 'valor-form' && currentItem) {
     return (
       <ValorForm
-        receita={currentReceita}
+        item={currentItem}
+        config={config}
         onBack={() => setView('detail')}
-        onSave={(receitaId, data) => {
-          addValor(receitaId, data)
+        onSave={(itemId, data) => {
+          store.addValor(itemId, data)
           setView('detail')
         }}
       />
@@ -63,11 +100,14 @@ export default function App() {
   }
 
   return (
-    <ReceitaList
-      receitas={receitas}
-      onSelect={(r) => { setSelected(r); setView('detail') }}
-      onAdd={() => { setSelected(null); setView('receita-form') }}
-      onDelete={deleteReceita}
+    <EntityList
+      items={store.items}
+      config={config}
+      tab={tab}
+      onTabChange={switchTab}
+      onSelect={(item) => { setSelected(item); setView('detail') }}
+      onAdd={() => { setSelected(null); setView('entity-form') }}
+      onDelete={store.deleteItem}
     />
   )
 }

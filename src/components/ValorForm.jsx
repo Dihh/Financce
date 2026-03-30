@@ -1,19 +1,26 @@
 import { useState } from 'react'
 import { currentMonth } from '../utils'
 
-export default function ValorForm({ receita, onSave, onBack }) {
+export default function ValorForm({ item, config, onSave, onBack }) {
   const [mes, setMes] = useState(currentMonth())
   const [valor, setValor] = useState('')
   const [observacao, setObservacao] = useState('')
 
+  const colorVars = {
+    '--primary': config.cor,
+    '--primary-hover': config.corHover,
+    '--primary-light': config.corLight,
+    '--primary-shadow': config.corShadow,
+  }
+
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!mes || !valor || Number(valor) <= 0) return
-    onSave(receita.id, { mes, valor, observacao: observacao.trim() })
+    onSave(item.id, { mes, valor, observacao: observacao.trim() })
   }
 
   return (
-    <div className="page">
+    <div className="page" style={colorVars}>
       <header className="header">
         <button className="btn-icon" onClick={onBack} aria-label="Voltar">‹</button>
         <span className="header-title">Adicionar Valor</span>
@@ -21,9 +28,9 @@ export default function ValorForm({ receita, onSave, onBack }) {
       </header>
 
       <main className="content">
-        <div className="receita-badge">
-          <span>Receita:</span>
-          <strong>{receita.nome}</strong>
+        <div className="entity-badge">
+          <span>{config.label}:</span>
+          <strong>{item.nome}</strong>
         </div>
 
         <form className="form" onSubmit={handleSubmit}>

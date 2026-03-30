@@ -1,26 +1,29 @@
 import { formatCurrency, formatMonth, totalReceita } from '../utils'
 
-export default function ReceitaDetail({ receita, onBack, onEdit, onDelete, onAddValor, onDeleteValor }) {
-  const total = totalReceita(receita)
-  const sorted = [...receita.valores].sort((a, b) => b.mes.localeCompare(a.mes))
+export default function EntityDetail({ item, config, onBack, onEdit, onDelete, onAddValor, onDeleteValor }) {
+  const total = totalReceita(item)
+  const sorted = [...item.valores].sort((a, b) => b.mes.localeCompare(a.mes))
+
+  const colorVars = {
+    '--primary': config.cor,
+    '--primary-hover': config.corHover,
+    '--primary-light': config.corLight,
+    '--primary-shadow': config.corShadow,
+  }
 
   const handleDelete = () => {
-    if (confirm(`Excluir a receita "${receita.nome}" e todos os seus registros?`)) {
-      onDelete(receita.id)
-    }
+    if (confirm(`Excluir "${item.nome}" e todos os seus registros?`)) onDelete(item.id)
   }
 
   const handleDeleteValor = (v) => {
-    if (confirm(`Excluir o registro de ${formatMonth(v.mes)}?`)) {
-      onDeleteValor(receita.id, v.id)
-    }
+    if (confirm(`Excluir o registro de ${formatMonth(v.mes)}?`)) onDeleteValor(item.id, v.id)
   }
 
   return (
-    <div className="page">
+    <div className="page" style={colorVars}>
       <header className="header">
         <button className="btn-icon" onClick={onBack} aria-label="Voltar">‹</button>
-        <span className="header-title">{receita.nome}</span>
+        <span className="header-title">{item.nome}</span>
         <div className="header-actions">
           <button className="btn-icon" onClick={onEdit} aria-label="Editar">✏️</button>
           <button className="btn-icon" onClick={handleDelete} aria-label="Excluir">🗑️</button>
@@ -28,19 +31,19 @@ export default function ReceitaDetail({ receita, onBack, onEdit, onDelete, onAdd
       </header>
 
       <main className="content">
-        {receita.descricao && (
-          <p className="detail-desc">{receita.descricao}</p>
+        {item.descricao && (
+          <p className="detail-desc">{item.descricao}</p>
         )}
 
         <div className="summary-card">
           <div className="summary-item">
-            <span className="summary-label">Total recebido</span>
+            <span className="summary-label">Total</span>
             <span className="summary-value">{formatCurrency(total)}</span>
           </div>
           <div className="summary-divider" />
           <div className="summary-item">
             <span className="summary-label">Registros</span>
-            <span className="summary-value">{receita.valores.length}</span>
+            <span className="summary-value">{item.valores.length}</span>
           </div>
         </div>
 

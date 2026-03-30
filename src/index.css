@@ -2,6 +2,7 @@
   --primary: #16a34a;
   --primary-hover: #15803d;
   --primary-light: #dcfce7;
+  --primary-shadow: rgba(22, 163, 74, 0.4);
   --danger: #dc2626;
   --danger-light: #fee2e2;
   --bg: #f1f5f9;
@@ -13,6 +14,7 @@
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
   --radius: 14px;
   --header-height: 60px;
+  --tab-bar-height: 64px;
 }
 
 * {
@@ -234,8 +236,8 @@ body {
   border-left: 3px solid var(--primary-light);
 }
 
-/* ── Receita badge ── */
-.receita-badge {
+/* ── Entity badge ── */
+.entity-badge {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -247,8 +249,63 @@ body {
   color: var(--primary);
 }
 
-.receita-badge strong {
+.entity-badge strong {
   font-weight: 600;
+}
+
+/* ── Tab bar ── */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 600px;
+  height: var(--tab-bar-height);
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+}
+
+.tab-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color 0.15s;
+  padding: 8px;
+}
+
+.tab-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.tab-btn-active {
+  font-weight: 700;
+}
+
+/* ── Content with tabs ── */
+.content-with-tabs {
+  padding-bottom: calc(var(--tab-bar-height) + 80px);
+}
+
+/* ── FAB above tab bar ── */
+.fab-with-tabs {
+  bottom: calc(var(--tab-bar-height) + 16px);
+}
+
+.fab-with-tabs:active {
+  transform: translateX(calc(50% + (min(100vw, 600px) / 2) - 76px)) scale(0.93) !important;
 }
 
 /* ── Empty state ── */
@@ -297,7 +354,7 @@ body {
   font-size: 28px;
   font-weight: 300;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);
+  box-shadow: 0 4px 14px var(--primary-shadow);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -307,7 +364,7 @@ body {
 
 .fab:hover {
   background: var(--primary-hover);
-  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.45);
+  box-shadow: 0 6px 18px var(--primary-shadow);
 }
 
 .fab:active {

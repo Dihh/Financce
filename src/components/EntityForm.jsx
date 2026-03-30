@@ -1,8 +1,15 @@
 import { useState } from 'react'
 
-export default function ReceitaForm({ receita, onSave, onBack }) {
-  const [nome, setNome] = useState(receita?.nome ?? '')
-  const [descricao, setDescricao] = useState(receita?.descricao ?? '')
+export default function EntityForm({ item, config, onSave, onBack }) {
+  const [nome, setNome] = useState(item?.nome ?? '')
+  const [descricao, setDescricao] = useState(item?.descricao ?? '')
+
+  const colorVars = {
+    '--primary': config.cor,
+    '--primary-hover': config.corHover,
+    '--primary-light': config.corLight,
+    '--primary-shadow': config.corShadow,
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -10,13 +17,13 @@ export default function ReceitaForm({ receita, onSave, onBack }) {
     onSave({ nome: nome.trim(), descricao: descricao.trim() })
   }
 
-  const isEditing = !!receita
+  const isEditing = !!item
 
   return (
-    <div className="page">
+    <div className="page" style={colorVars}>
       <header className="header">
         <button className="btn-icon" onClick={onBack} aria-label="Voltar">‹</button>
-        <span className="header-title">{isEditing ? 'Editar Receita' : 'Nova Receita'}</span>
+        <span className="header-title">{isEditing ? `Editar ${config.label}` : `Nova ${config.label}`}</span>
         <span />
       </header>
 
@@ -28,7 +35,7 @@ export default function ReceitaForm({ receita, onSave, onBack }) {
               id="nome"
               className="form-input"
               type="text"
-              placeholder="Ex: Salário, Freelance, Aluguel..."
+              placeholder={config.placeholder}
               value={nome}
               onChange={e => setNome(e.target.value)}
               required
@@ -49,7 +56,7 @@ export default function ReceitaForm({ receita, onSave, onBack }) {
           </div>
 
           <button className="btn btn-primary btn-full" type="submit">
-            {isEditing ? 'Salvar alterações' : 'Criar receita'}
+            {isEditing ? 'Salvar alterações' : `Criar ${config.label.toLowerCase()}`}
           </button>
         </form>
       </main>
