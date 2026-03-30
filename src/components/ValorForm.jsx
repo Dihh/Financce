@@ -6,7 +6,7 @@ export default function ValorForm({ item, config, onSave, onBack }) {
   const [valor, setValor] = useState('')
   const [observacao, setObservacao] = useState('')
   const [repetir, setRepetir] = useState(false)
-  const [numMeses, setNumMeses] = useState(2)
+  const [numMeses, setNumMeses] = useState('2')
 
   const colorVars = {
     '--primary': config.cor,
@@ -19,13 +19,14 @@ export default function ValorForm({ item, config, onSave, onBack }) {
     e.preventDefault()
     if (!mes || !valor || Number(valor) <= 0) return
     const base = { valor, observacao: observacao.trim() }
+    const n = Math.min(60, Math.max(2, Number(numMeses) || 2))
     const valores = repetir
-      ? Array.from({ length: numMeses }, (_, i) => ({ ...base, mes: addMonths(mes, i) }))
+      ? Array.from({ length: n }, (_, i) => ({ ...base, mes: addMonths(mes, i) }))
       : [{ ...base, mes }]
     onSave(item.id, valores)
   }
 
-  const total = repetir ? numMeses : 1
+  const total = repetir ? Math.min(60, Math.max(2, Number(numMeses) || 2)) : 1
 
   return (
     <div className="page" style={colorVars}>
@@ -103,7 +104,7 @@ export default function ValorForm({ item, config, onSave, onBack }) {
                 className="form-input"
                 type="number"
                 value={numMeses}
-                onChange={e => setNumMeses(Math.max(2, Math.min(60, Number(e.target.value))))}
+                onChange={e => setNumMeses(e.target.value)}
                 min="2"
                 max="60"
               />
