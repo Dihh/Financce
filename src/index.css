@@ -299,14 +299,6 @@ body {
   padding-bottom: calc(var(--tab-bar-height) + 80px);
 }
 
-/* ── FAB above tab bar ── */
-.fab-with-tabs {
-  bottom: calc(var(--tab-bar-height) + 16px);
-}
-
-.fab-with-tabs:active {
-  transform: translateX(calc(50% + (min(100vw, 600px) / 2) - 76px)) scale(0.93) !important;
-}
 
 /* ── Empty state ── */
 .empty-state {
@@ -359,7 +351,15 @@ body {
   align-items: center;
   justify-content: center;
   transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
-  z-index: 50;
+  z-index: 150;
+}
+
+.fab.fab-with-tabs {
+  bottom: calc(var(--tab-bar-height) + 16px);
+}
+
+.fab.fab-with-tabs:active {
+  transform: translateX(calc(50% + (min(100vw, 600px) / 2) - 76px)) scale(0.93);
 }
 
 .fab:hover {
