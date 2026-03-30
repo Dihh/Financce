@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useEntities } from './hooks/useEntities'
 import Home from './components/Home'
 import TabBar from './components/TabBar'
@@ -40,40 +40,54 @@ const CONFIGS = {
   },
 }
 
+const INITIAL_NAV = { tab: 'inicio', view: 'list', selectedId: null }
+
 export default function App() {
   const receitas = useEntities('financce_receitas')
   const despesas = useEntities('financce_despesas')
   const gastos   = useEntities('financce_gastos')
 
-  const [tab, setTab] = useState('inicio')
-  const [view, setView] = useState('list')
-  const [selected, setSelected] = useState(null)
+  const [nav, setNav] = useState(INITIAL_NAV)
 
-  const switchTab = (newTab) => {
-    setTab(newTab)
-    setSelected(null)
-    setView('list')
+  // Inicializa a entrada do histórico
+  useEffect(() => {
+    history.replaceState(INITIAL_NAV, '')
+  }, [])
+
+  // Botão voltar do browser
+  useEffect(() => {
+    const onPop = (e) => {
+      if (e.state) setNav(e.state)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
+  const go = (view, tab = nav.tab, selectedId = null) => {
+    const next = { view, tab, selectedId }
+    setNav(next)
+    history.pushState(next, '')
   }
 
+  const { tab, view, selectedId } = nav
   const stores = { receitas, despesas, gastos }
   const config = CONFIGS[tab]
-  const store = stores[tab]
-  const currentItem = store?.items.find(i => i.id === selected?.id) ?? selected
+  const store  = stores[tab]
+  const currentItem = store?.items.find(i => i.id === selectedId) ?? null
 
   if (view === 'entity-form') {
     return (
       <EntityForm
-        item={selected}
+        item={currentItem}
         config={config}
-        onBack={() => setView(selected ? 'detail' : 'list')}
+        onBack={() => selectedId ? go('detail', tab, selectedId) : go('list', tab)}
         onSave={(data) => {
-          if (selected) {
-            store.updateItem(selected.id, data)
-            setSelected({ ...selected, ...data })
-            setView('detail')
+          if (selectedId) {
+            store.updateItem(selectedId, data)
+            go('detail', tab, selectedId)
           } else {
             store.addItem(data)
-            setView('list')
+            go('list', tab)
           }
         }}
       />
@@ -85,13 +99,10 @@ export default function App() {
       <EntityDetail
         item={currentItem}
         config={config}
-        onBack={() => setView('list')}
-        onEdit={() => setView('entity-form')}
-        onDelete={(id) => {
-          store.deleteItem(id)
-          setView('list')
-        }}
-        onAddValor={() => setView('valor-form')}
+        onBack={() => go('list', tab)}
+        onEdit={() => go('entity-form', tab, selectedId)}
+        onDelete={(id) => { store.deleteItem(id); go('list', tab) }}
+        onAddValor={() => go('valor-form', tab, selectedId)}
         onDeleteValor={store.deleteValor}
       />
     )
@@ -102,10 +113,10 @@ export default function App() {
       <ValorForm
         item={currentItem}
         config={config}
-        onBack={() => setView('detail')}
+        onBack={() => go('detail', tab, selectedId)}
         onSave={(itemId, valores) => {
           store.addValores(itemId, valores)
-          setView('detail')
+          go('detail', tab, selectedId)
         }}
       />
     )
@@ -123,12 +134,12 @@ export default function App() {
         <EntityList
           items={store.items}
           config={config}
-          onSelect={(item) => { setSelected(item); setView('detail') }}
-          onAdd={() => { setSelected(null); setView('entity-form') }}
+          onSelect={(item) => go('detail', tab, item.id)}
+          onAdd={() => go('entity-form', tab)}
           onDelete={store.deleteItem}
         />
       )}
-      <TabBar tab={tab} onTabChange={switchTab} />
+      <TabBar tab={tab} onTabChange={(newTab) => go('list', newTab)} />
     </>
   )
 }
