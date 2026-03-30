@@ -59,7 +59,7 @@ export default function Home({ receitas, despesas, gastos }) {
               <span className="report-card-label">Despesas</span>
               <span className="report-card-count">{despesas.reduce((n, r) => n + r.valores.filter(v => v.mes === mes).length, 0)} registro(s)</span>
             </div>
-            <span className="report-card-value" style={{ color: '#dc2626' }}>{formatCurrency(totalDespesas)}</span>
+            <span className="report-card-value" style={{ color: '#dc2626' }}>{totalDespesas > 0 ? '-' : ''}{formatCurrency(totalDespesas)}</span>
           </div>
 
           <div className="card report-card">
@@ -68,7 +68,7 @@ export default function Home({ receitas, despesas, gastos }) {
               <span className="report-card-label">Gastos</span>
               <span className="report-card-count">{gastos.reduce((n, r) => n + r.valores.filter(v => v.mes === mes).length, 0)} registro(s)</span>
             </div>
-            <span className="report-card-value" style={{ color: '#ea580c' }}>{formatCurrency(totalGastos)}</span>
+            <span className="report-card-value" style={{ color: '#ea580c' }}>{totalGastos > 0 ? '-' : ''}{formatCurrency(totalGastos)}</span>
           </div>
         </div>
       </main>
