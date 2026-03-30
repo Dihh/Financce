@@ -14,3 +14,9 @@ export const currentMonth = () => {
 
 export const totalReceita = (receita) =>
   receita.valores.reduce((sum, v) => sum + v.valor, 0)
+
+export const addMonths = (mesStr, n) => {
+  const [y, m] = mesStr.split('-').map(Number)
+  const date = new Date(y, m - 1 + n)
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+}

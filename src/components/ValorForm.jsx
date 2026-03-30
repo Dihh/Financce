@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { currentMonth } from '../utils'
+import { currentMonth, addMonths } from '../utils'
 
 export default function ValorForm({ item, config, onSave, onBack }) {
   const [mes, setMes] = useState(currentMonth())
   const [valor, setValor] = useState('')
   const [observacao, setObservacao] = useState('')
+  const [repetir, setRepetir] = useState(false)
+  const [numMeses, setNumMeses] = useState(2)
 
   const colorVars = {
     '--primary': config.cor,
@@ -16,8 +18,14 @@ export default function ValorForm({ item, config, onSave, onBack }) {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!mes || !valor || Number(valor) <= 0) return
-    onSave(item.id, { mes, valor, observacao: observacao.trim() })
+    const base = { valor, observacao: observacao.trim() }
+    const valores = repetir
+      ? Array.from({ length: numMeses }, (_, i) => ({ ...base, mes: addMonths(mes, i) }))
+      : [{ ...base, mes }]
+    onSave(item.id, valores)
   }
+
+  const total = repetir ? numMeses : 1
 
   return (
     <div className="page" style={colorVars}>
@@ -35,7 +43,7 @@ export default function ValorForm({ item, config, onSave, onBack }) {
 
         <form className="form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label" htmlFor="mes">Mês *</label>
+            <label className="form-label" htmlFor="mes">Mês inicial *</label>
             <input
               id="mes"
               className="form-input"
@@ -74,8 +82,36 @@ export default function ValorForm({ item, config, onSave, onBack }) {
             />
           </div>
 
+          <label className="toggle-row">
+            <div className="toggle-text">
+              <span className="toggle-label">Repetir nos próximos meses</span>
+              <span className="toggle-desc">Cria o mesmo valor em meses consecutivos</span>
+            </div>
+            <div
+              className={`toggle-switch ${repetir ? 'toggle-on' : ''}`}
+              onClick={() => setRepetir(r => !r)}
+              role="switch"
+              aria-checked={repetir}
+            />
+          </label>
+
+          {repetir && (
+            <div className="form-group">
+              <label className="form-label" htmlFor="numMeses">Repetir por quantos meses?</label>
+              <input
+                id="numMeses"
+                className="form-input"
+                type="number"
+                value={numMeses}
+                onChange={e => setNumMeses(Math.max(2, Math.min(60, Number(e.target.value))))}
+                min="2"
+                max="60"
+              />
+            </div>
+          )}
+
           <button className="btn btn-primary btn-full" type="submit">
-            Salvar valor
+            {total > 1 ? `Salvar ${total} valores` : 'Salvar valor'}
           </button>
         </form>
       </main>

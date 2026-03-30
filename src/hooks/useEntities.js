@@ -30,6 +30,12 @@ export function useEntities(storageKey) {
           ? { ...i, valores: [...i.valores, { id: genId(), ...data, valor: Number(data.valor) }] }
           : i
       )),
+    addValores: (itemId, dataArray) =>
+      persist(items.map(i =>
+        i.id === itemId
+          ? { ...i, valores: [...i.valores, ...dataArray.map(d => ({ id: genId(), ...d, valor: Number(d.valor) }))] }
+          : i
+      )),
     deleteValor: (itemId, valorId) =>
       persist(items.map(i =>
         i.id === itemId

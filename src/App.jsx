@@ -103,8 +103,8 @@ export default function App() {
         item={currentItem}
         config={config}
         onBack={() => setView('detail')}
-        onSave={(itemId, data) => {
-          store.addValor(itemId, data)
+        onSave={(itemId, valores) => {
+          store.addValores(itemId, valores)
           setView('detail')
         }}
       />
