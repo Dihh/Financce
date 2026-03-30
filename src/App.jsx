@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useEntities } from './hooks/useEntities'
+import Home from './components/Home'
+import TabBar from './components/TabBar'
 import EntityList from './components/EntityList'
 import EntityForm from './components/EntityForm'
 import EntityDetail from './components/EntityDetail'
@@ -15,7 +17,6 @@ const CONFIGS = {
     corHover: '#15803d',
     corLight: '#dcfce7',
     corShadow: 'rgba(22, 163, 74, 0.4)',
-    storageKey: 'financce_receitas',
   },
   despesas: {
     label: 'Despesa',
@@ -26,7 +27,6 @@ const CONFIGS = {
     corHover: '#b91c1c',
     corLight: '#fee2e2',
     corShadow: 'rgba(220, 38, 38, 0.4)',
-    storageKey: 'financce_despesas',
   },
   gastos: {
     label: 'Gasto',
@@ -37,29 +37,28 @@ const CONFIGS = {
     corHover: '#c2410c',
     corLight: '#ffedd5',
     corShadow: 'rgba(234, 88, 12, 0.4)',
-    storageKey: 'financce_gastos',
   },
 }
 
 export default function App() {
   const receitas = useEntities('financce_receitas')
   const despesas = useEntities('financce_despesas')
-  const gastos = useEntities('financce_gastos')
+  const gastos   = useEntities('financce_gastos')
 
-  const [tab, setTab] = useState('receitas')
+  const [tab, setTab] = useState('inicio')
   const [view, setView] = useState('list')
   const [selected, setSelected] = useState(null)
-
-  const config = CONFIGS[tab]
-  const stores = { receitas, despesas, gastos }
-  const store = stores[tab]
-  const currentItem = store.items.find(i => i.id === selected?.id) ?? selected
 
   const switchTab = (newTab) => {
     setTab(newTab)
     setSelected(null)
     setView('list')
   }
+
+  const stores = { receitas, despesas, gastos }
+  const config = CONFIGS[tab]
+  const store = stores[tab]
+  const currentItem = store?.items.find(i => i.id === selected?.id) ?? selected
 
   if (view === 'entity-form') {
     return (
@@ -113,14 +112,23 @@ export default function App() {
   }
 
   return (
-    <EntityList
-      items={store.items}
-      config={config}
-      tab={tab}
-      onTabChange={switchTab}
-      onSelect={(item) => { setSelected(item); setView('detail') }}
-      onAdd={() => { setSelected(null); setView('entity-form') }}
-      onDelete={store.deleteItem}
-    />
+    <>
+      {tab === 'inicio' ? (
+        <Home
+          receitas={receitas.items}
+          despesas={despesas.items}
+          gastos={gastos.items}
+        />
+      ) : (
+        <EntityList
+          items={store.items}
+          config={config}
+          onSelect={(item) => { setSelected(item); setView('detail') }}
+          onAdd={() => { setSelected(null); setView('entity-form') }}
+          onDelete={store.deleteItem}
+        />
+      )}
+      <TabBar tab={tab} onTabChange={switchTab} />
+    </>
   )
 }

@@ -1,6 +1,6 @@
 import { formatCurrency, totalReceita } from '../utils'
 
-export default function EntityList({ items, config, tab, onTabChange, onSelect, onAdd, onDelete }) {
+export default function EntityList({ items, config, onSelect, onAdd, onDelete }) {
   const colorVars = {
     '--primary': config.cor,
     '--primary-hover': config.corHover,
@@ -56,33 +56,6 @@ export default function EntityList({ items, config, tab, onTabChange, onSelect, 
       </main>
 
       <button className="fab fab-with-tabs" onClick={onAdd} aria-label={`Adicionar ${config.label}`}>+</button>
-
-      <nav className="tab-bar">
-        <button
-          className={`tab-btn ${tab === 'receitas' ? 'tab-btn-active' : ''}`}
-          style={tab === 'receitas' ? { color: '#16a34a' } : {}}
-          onClick={() => onTabChange('receitas')}
-        >
-          <span className="tab-icon">💰</span>
-          <span>Receitas</span>
-        </button>
-        <button
-          className={`tab-btn ${tab === 'despesas' ? 'tab-btn-active' : ''}`}
-          style={tab === 'despesas' ? { color: '#dc2626' } : {}}
-          onClick={() => onTabChange('despesas')}
-        >
-          <span className="tab-icon">💸</span>
-          <span>Despesas</span>
-        </button>
-        <button
-          className={`tab-btn ${tab === 'gastos' ? 'tab-btn-active' : ''}`}
-          style={tab === 'gastos' ? { color: '#ea580c' } : {}}
-          onClick={() => onTabChange('gastos')}
-        >
-          <span className="tab-icon">🛒</span>
-          <span>Gastos</span>
-        </button>
-      </nav>
     </div>
   )
 }
